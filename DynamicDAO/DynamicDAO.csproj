@@ -5,12 +5,11 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Deterministic>false</Deterministic>
-		<VersionPrefix>1.0.0</VersionPrefix>
-		<VersionSuffix>-rc1</VersionSuffix>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageLicenseExpression>MIT-0</PackageLicenseExpression>
 		<Authors>Raphael da Cunha Crejo</Authors>
-		<AssemblyVersion>1.0.0.$([System.DateTime]::UtcNow.ToString(mmff))</AssemblyVersion>
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionSuffix>-rc1</VersionSuffix>
 		<Version Condition=" '$(VersionSuffix)' == '' ">$(VersionPrefix)</Version>
 		<Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix)$(VersionSuffix)</Version>
 		<Version>$(Version)</Version>
@@ -18,8 +17,15 @@
 		<Description>Provides an easy way to access databases and fill objects.</Description>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<SubtractionParameter>$([System.Double]::Parse('36526.27265314815', '$([System.Globalization.CultureInfo]::GetCultureInfo("en-US"))'))</SubtractionParameter>
+		<BuildNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Split(',')[0])</BuildNumber>
+		<RevisionNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Split(',')[1].Substring(0, 5))</RevisionNumber>
+		<AssemblyVersion>1.0.$(BuildNumber).$(RevisionNumber)</AssemblyVersion>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DebugType>embedded</DebugType>
+		<DebugType>portable</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
