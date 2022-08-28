@@ -20,7 +20,7 @@
 	<PropertyGroup>
 		<SubtractionParameter>$([System.Double]::Parse('36526.27265314815', '$([System.Globalization.CultureInfo]::GetCultureInfo("en-US"))'))</SubtractionParameter>
 		<BuildNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Split(',')[0])</BuildNumber>
-		<RevisionNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Split(',')[1].Substring(0, 5))</RevisionNumber>
+		<RevisionNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Split(',')[1].Substring(0,5))</RevisionNumber>
 		<AssemblyVersion>1.0.$(BuildNumber).$(RevisionNumber)</AssemblyVersion>
 	</PropertyGroup>
 
