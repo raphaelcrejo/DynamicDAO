@@ -61,7 +61,7 @@ Considers the following class:
 
 ```csharp
 using System.Data;
-using DynamicDAO.Mapping;
+using DynamicDAO.Mapper;
 ...
 public class Person
 {
