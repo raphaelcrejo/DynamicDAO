@@ -19,9 +19,14 @@
 
 	<PropertyGroup>
 		<SubtractionParameter>$([System.Double]::Parse('36526.27265314815', '$([System.Globalization.CultureInfo]::GetCultureInfo("en-US"))'))</SubtractionParameter>
-		<BuildNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Split('.')[0])</BuildNumber>
-		<RevisionNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Split('.')[1].Substring(0,5))</RevisionNumber>
-		<AssemblyVersion>1.0.$(BuildNumber).$(RevisionNumber)</AssemblyVersion>
+		<Build>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Replace(',', '.').Split('.')[0])</Build>
+		
+		<RevisionNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Replace(',', '.').Split('.')[1])</RevisionNumber>
+		<RevNumber>$([System.Double]::Parse('$(RevisionNumber)', '$([System.Globalization.CultureInfo]::GetCultureInfo("en-US"))'))</RevNumber>
+		
+		<Revision Condition=" '$(RevNumber)' &gt; 65535 ">$(RevisionNumber.Substring(0, 4))</Revision>
+		<Revision Condition=" '$(RevNumber)' &lt;= 65535 ">$(RevisionNumber.Substring(0, 5))</Revision>
+		<AssemblyVersion>1.0.$(Build).$(Revision)</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
