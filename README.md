@@ -1,7 +1,7 @@
 # DynamicDAO - _Providing an easy way to access databases and fill objects_
 
 
-[![license](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/raphaelcrejo/DynamicDAO6/blob/main/LICENSE) [![.NET](https://github.com/raphaelcrejo/DynamicDAO6/actions/workflows/dotnet.yml/badge.svg)](https://github.com/raphaelcrejo/DynamicDAO6/actions/workflows/dotnet.yml) [![Donate](https://img.shields.io/badge/Donate-PayPal-informational.svg)](https://www.paypal.com/donate/?hosted_button_id=PZX6VD5F8VD3S)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/raphaelcrejo/DynamicDAO/blob/main/LICENSE) [![.NET](https://github.com/raphaelcrejo/DynamicDAO/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/raphaelcrejo/DynamicDAO/actions/workflows/dotnet.yml) [![Donate](https://img.shields.io/badge/Donate-PayPal-informational.svg)](https://www.paypal.com/donate/?hosted_button_id=PZX6VD5F8VD3S)
 
 **Note:** This repository contains the **.NET Standard 2.1** implementation of the library. For the **.NET Framework** implementation, [click here][Nfr]
 
