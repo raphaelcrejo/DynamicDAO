@@ -1,7 +1,7 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace DynamicDAO.Mapper
+namespace DynamicDAO.Mapping
 {
     /// <summary>
     /// Realiza o mapeamento entre a entidade, POCO ou DTO, para execução de queries e/ou stored procedures.
@@ -21,9 +21,9 @@ namespace DynamicDAO.Mapper
         /// <exception cref="System.InvalidOperationException">InvalidOperationException</exception>
         internal static Dictionary<string, object[]> GetParameters<T>()
         {
-            Dictionary<string, object[]> dicParameters = new();
+            Dictionary<string, object[]> dicParameters = new Dictionary<string, object[]>();
 
-            foreach (PropertyInfo pInfo in typeof(T).GetProperties())
+            foreach (PropertyInfo pInfo in typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance))
             {
                 object[] attribute = pInfo.GetCustomAttributes(typeof(ParameterAttribute), true);
                 object[] parameterData = new object[2];
@@ -51,9 +51,9 @@ namespace DynamicDAO.Mapper
         /// <exception cref="System.InvalidOperationException">InvalidOperationException</exception>
         internal static Dictionary<string, string> GetFields<T>()
         {
-            Dictionary<string, string> dicFields = new();
+            Dictionary<string, string> dicFields = new Dictionary<string, string>();
 
-            foreach (PropertyInfo pInfo in typeof(T).GetProperties())
+            foreach (PropertyInfo pInfo in typeof(T).GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance))
             {
                 object[] attribute = pInfo.GetCustomAttributes(typeof(FieldAttribute), true);
 

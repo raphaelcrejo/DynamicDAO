@@ -1,40 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		<Nullable>enable</Nullable>
 		<Deterministic>false</Deterministic>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageLicenseExpression>MIT-0</PackageLicenseExpression>
 		<Authors>Raphael da Cunha Crejo</Authors>
 		<VersionPrefix>1.0.0</VersionPrefix>
-		<VersionSuffix>-rc1</VersionSuffix>
+		<VersionSuffix></VersionSuffix>
 		<Version Condition=" '$(VersionSuffix)' == '' ">$(VersionPrefix)</Version>
 		<Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix)$(VersionSuffix)</Version>
 		<Version>$(Version)</Version>
-		<Copyright>Copyright © 2022 Raphael da Cunha Crejo</Copyright>
+		<Copyright>Copyright © 2025 Raphael da Cunha Crejo</Copyright>
 		<Description>Provides an easy way to access databases and fill objects.</Description>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<SubtractionParameter>$([System.Double]::Parse('36526.27265314815', '$([System.Globalization.CultureInfo]::GetCultureInfo("en-US"))'))</SubtractionParameter>
 		<Build>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Replace(',', '.').Split('.')[0])</Build>
-		
+
 		<RevisionNumber>$([MSBuild]::Subtract($([System.DateTime]::UtcNow.ToOADate()), $(SubtractionParameter)).ToString().Replace(',', '.').Split('.')[1])</RevisionNumber>
 		<RevNumber>$([System.Double]::Parse('$(RevisionNumber)', '$([System.Globalization.CultureInfo]::GetCultureInfo("en-US"))'))</RevNumber>
-		
+
 		<Revision Condition=" '$(RevNumber)' &gt; 65535 ">$(RevisionNumber.Substring(0, 4))</Revision>
 		<Revision Condition=" '$(RevNumber)' &lt;= 65535 ">$(RevisionNumber.Substring(0, 5))</Revision>
 		<AssemblyVersion>1.0.$(Build).$(Revision)</AssemblyVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DebugType>portable</DebugType>
+		<DebugType>embedded</DebugType>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>embedded</DebugType>
+		<Optimize>True</Optimize>
 	</PropertyGroup>
 
 </Project>

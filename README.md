@@ -3,7 +3,7 @@
 
 [![license](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/raphaelcrejo/DynamicDAO6/blob/main/LICENSE) [![.NET](https://github.com/raphaelcrejo/DynamicDAO6/actions/workflows/dotnet.yml/badge.svg)](https://github.com/raphaelcrejo/DynamicDAO6/actions/workflows/dotnet.yml) [![Donate](https://img.shields.io/badge/Donate-PayPal-informational.svg)](https://www.paypal.com/donate/?hosted_button_id=PZX6VD5F8VD3S)
 
-**Note:** This repository contains the **.NET6** implementation of the library. For the **.NET Framework** implementation, [click here][Nfr]
+**Note:** This repository contains the **.NET Standard 2.1** implementation of the library. For the **.NET Framework** implementation, [click here][Nfr]
 
 ## About
 DynamicDAO is a .NET MicroORM that allows you to access and work with your database within minimal efforts.
@@ -17,12 +17,18 @@ DynamicDAO is a .NET MicroORM that allows you to access and work with your datab
 ### Setting up your provider information
 
 ```csharp
-ProviderInfo provider = new ProviderInfo("System.Data.SqlClient", "Data Source=.\SQLEXPRESS;Initial Catalog=tempdb;User ID=sa;Password=adm")
+ProviderInfo provider = new ProviderInfo("Data Source=.\SQLEXPRESS;Initial Catalog=tempdb;User ID=sa;Password=adm")
 // Defaut parameters: 
+// - providerName: System.Data.SqlClient
 // - identifier  = @
 // - commandType = CommandType.StoredProcedure
+// - commandTimeout = 30sec
+// - lockTransaction = false
+// - isolationLevel = IsolationLevel.ReadCommited (works only when lockTransaction is true)
 ```
+
 ### Creating a data access object
+
 ```csharp
 using DynamicDAO;
 ...
@@ -31,24 +37,40 @@ using (AutoDAO db = new AutoDAO(provider))
     // Your code here
 }
 ```
+or
+```csharp
+using DynamicDAO;
+...
+// Assumes default settings, like ProviderInfo
+using (AutoDAO db = new AutoDAO("Data Source=.\SQLEXPRESS;Initial Catalog=tempdb;User ID=sa;Password=adm"))
+{
+    // Your code here
+}
+```
+
 ### Adding manual parameters to the data access object
+
 Considers the following procedure:
+
 ```sql
 -- @PERSON_NAME VARCHAR(100)
 -- @PERSON_AGE INT
 -- @PERSON_DOB DATE
+
 INSERT INTO dbo.Person
     (PersonName, PersonAge, PersonDOB)
 VALUES
     (@PERSON_NAME, @PERSON_AGE, @PERSON_DOB)
 ```
+
 ```csharp
 using (AutoDAO db = new AutoDAO(provider))
 {
     objetc[][] inputParameters = new object[3][];
-    inputParameters[0] = new object { "NAME", "Raphael Crejo" };
-    inputParameters[1] = new object { "AGE", 37 };
-    inputParameters[2] = new object { "DOB", new DateTime(1985, 3, 15) };
+
+    inputParameters[0] = new object[] { "NAME", "Raphael Crejo" };
+    inputParameters[1] = new object[] { "AGE", 37 };
+    inputParameters[2] = new object[] { "DOB", new DateTime(1985, 3, 15) };
     
     db.AddInputParameters(inputParameters);
     // Your code here
@@ -61,7 +83,7 @@ Considers the following class:
 
 ```csharp
 using System.Data;
-using DynamicDAO.Mapper;
+using DynamicDAO.Mapping;
 ...
 public class Person
 {
@@ -86,9 +108,10 @@ public class Person
 Person person = new Person
 {
     Name = "Raphael da Cunha Crejo",
-    Age = 37,
+    Age = 39,
     DOB = new DateTime(1985, 3, 15)
 };
+
 using (AutoDAO db = new AutoDAO(provider))
 {
     db.AddParameters(person);
@@ -126,20 +149,6 @@ db.ClearParameters(); // remove all parameters from IDBCommand
 db.RemoveParameters(new string[] { "PERSON_DOB" }); // remove specific parameter from IDBCommand
 ```
 
-## Version info
-* 1.0.0-rc1
-This library will stay Release Candidate 1 due by the following reasons:
-    * `AddOutputParameter` are not tested
-    * `IDBTransaction` are not implemented
-    * Tested on SQL Server only. Tests on other databases pending 
-    * CommandType.Text may works incorrectly
-
-## Future implementations
-* Add an `IDBTransaction` to manage transactions
-* Create an agnostic BulkCopy method, for mass-insert operations
-* Replace array with `IEnumerable` or `IDictionary` objects 
-* Improve CommandType.Text functionality
-
 [//]: #
-[NFr]: <https://github.com/raphaelcrejo/DynamicDAO>
-[Lic]: <https://github.com/raphaelcrejo/DynamicDAO6/blob/main/LICENSE>
+[NFr]: <https://github.com/raphaelcrejo/DynamicDAOfx>
+[Lic]: <https://github.com/raphaelcrejo/DynamicDAO/blob/main/LICENSE>

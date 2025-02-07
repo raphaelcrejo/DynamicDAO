@@ -1,33 +1,24 @@
-﻿namespace DynamicDAO.Mapper
+﻿using System;
+
+namespace DynamicDAO.Mapping
 {
     /// <summary>
     /// Marca os elementos utilizados como receptores de dados das queries e/ou stored procedures. Essa classe não pode ser herdada.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
-    public class FieldAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    public sealed class FieldAttribute : Attribute
     {
         #region Public Properties
-
-        private string propertyName;
-        private string retrievedField;
 
         /// <summary>
         /// Nome do campo
         /// </summary>
-        public virtual string PropertyName
-        {
-            get => propertyName;
-            set => propertyName = value;
-        }
+        public string PropertyName { get; set; }
 
         /// <summary>
         /// Campo retornado pela consulta
         /// </summary>
-        public virtual string RetrievedField
-        {
-            get => retrievedField;
-            set => retrievedField = value;
-        }
+        public string RetrievedField { get; set; }
 
         #endregion Public Properties
 
@@ -40,8 +31,8 @@
         /// <param name="retrievedField">Nome da coluna devolvida pela consulta.</param>
         public FieldAttribute(string propertyName, string retrievedField)
         {
-            this.propertyName = propertyName;
-            this.retrievedField = retrievedField;
+            PropertyName = propertyName;
+            RetrievedField = retrievedField;
         }
 
         #endregion Constructors

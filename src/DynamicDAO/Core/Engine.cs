@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Reflection;
 
 namespace DynamicDAO.Core
@@ -31,14 +33,14 @@ namespace DynamicDAO.Core
         {
             string colName;
             Type t = typeof(T);
-            T returnObject = new();
-            Dictionary<string, string> dicFields = Mapper.Mapper.GetFields<T>();
+            T returnObject = new T();
+            Dictionary<string, string> dicFields = Mapping.Mapper.GetFields<T>();
 
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 colName = reader.GetName(i);
 
-                PropertyInfo? pInfo = t.GetProperty(dicFields[colName], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo pInfo = t.GetProperty(dicFields[colName], BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
                 if (pInfo != null)
                 {
@@ -53,7 +55,7 @@ namespace DynamicDAO.Core
                         }
                         else
                         {
-                            val = Convert.ChangeType(val, Nullable.GetUnderlyingType(pInfo.PropertyType)!);
+                            val = Convert.ChangeType(val, Nullable.GetUnderlyingType(pInfo.PropertyType));
                         }
                     }
                     else
@@ -91,11 +93,11 @@ namespace DynamicDAO.Core
             {
                 command.Parameters.Clear();
 
-                Dictionary<string, object[]> dicParameters = Mapper.Mapper.GetParameters<T>();
+                Dictionary<string, object[]> dicParameters = Mapping.Mapper.GetParameters<T>();
 
                 foreach (var property in parameters.GetType().GetProperties())
                 {
-                    object? value = property.GetValue(parameters, null);
+                    object value = property.GetValue(parameters, null);
                     var parameter = command.CreateParameter();
 
                     if (dicParameters.ContainsKey(property.Name) == false)
@@ -218,10 +220,11 @@ namespace DynamicDAO.Core
         /// </summary>
         /// <param name="connection">Conexão com a fonte de dados</param>
         /// <param name="command">Instrução SQL a ser executada.</param>
+        /// <param name="transaction">Transação associada ao comando.</param>
         /// <param name="storedProcedure">Query/Stored procedure a ser executada.</param>
         /// <returns>O número de linhas afetadas.</returns>
         /// <exception cref="InvalidOperationException">InvalidOperationException</exception>
-        internal static int ExecuteNonQuery(IDbConnection connection, IDbCommand command, string storedProcedure)
+        internal static int ExecuteNonQuery(ref IDbConnection connection, ref IDbCommand command, ref IDbTransaction? transaction, string storedProcedure)
         {
             try
             {
@@ -230,6 +233,11 @@ namespace DynamicDAO.Core
                 if (connection.State == ConnectionState.Closed)
                 {
                     connection.Open();
+
+                    if (transaction != null)
+                    {
+                        command.Transaction ??= transaction;
+                    }
                 }
 
                 return command.ExecuteNonQuery();
@@ -245,9 +253,10 @@ namespace DynamicDAO.Core
         /// </summary>
         /// <param name="connection">Conexão com a fonte de dados</param>
         /// <param name="command">Instrução SQL a ser executada.</param>
+        /// <param name="transaction">Transação associada ao comando.</param>
         /// <param name="storedProcedure">Query/Stored procedure a ser executada.</param>
         /// <returns>A primeira linha da primeira coluna do conjunto de resultados.</returns>
-        internal static object ExecuteScalar(IDbConnection connection, IDbCommand command, string storedProcedure)
+        internal static object ExecuteScalar(ref IDbConnection connection, ref IDbCommand command, ref IDbTransaction? transaction, string storedProcedure)
         {
             try
             {
@@ -256,9 +265,14 @@ namespace DynamicDAO.Core
                 if (connection.State == ConnectionState.Closed)
                 {
                     connection.Open();
+
+                    if (transaction != null)
+                    {
+                        command.Transaction ??= transaction;
+                    }
                 }
 
-                return command.ExecuteScalar()!;
+                return command.ExecuteScalar();
             }
             catch
             {
@@ -272,11 +286,12 @@ namespace DynamicDAO.Core
         /// <typeparam name="T">Tipo de objeto a ser preenchido.</typeparam>
         /// <param name="connection">Conexão com a fonte de dados</param>
         /// <param name="command">Instrução SQL a ser executada.</param>
+        /// <param name="transaction">Transação associada ao comando.</param>
         /// <param name="storedProcedure">Query/Stored procedure a ser executada.</param>
         /// <returns>Um objeto <typeparamref name="T"/> preenchido.</returns>
-        internal static T GetEntity<T>(IDbConnection connection, IDbCommand command, string storedProcedure) where T : new()
+        internal static T GetEntity<T>(ref IDbConnection connection, ref IDbCommand command, ref IDbTransaction? transaction, string storedProcedure) where T : new()
         {
-            T returnObject = new();
+            T returnObject = new T();
 
             try
             {
@@ -285,6 +300,11 @@ namespace DynamicDAO.Core
                 if (connection.State == ConnectionState.Closed)
                 {
                     connection.Open();
+
+                    if (transaction != null)
+                    {
+                        command.Transaction ??= transaction;
+                    }
                 }
 
                 using (IDataReader reader = command.ExecuteReader())
@@ -309,11 +329,12 @@ namespace DynamicDAO.Core
         /// <typeparam name="T">Tipo de objetos na lista.</typeparam>
         /// <param name="connection">Conexão com a fonte de dados</param>
         /// <param name="command">Instrução SQL a ser executada.</param>
+        /// <param name="transaction">Transação associada ao comando.</param>
         /// <param name="storedProcedure">Query/Stored procedure a ser executada.</param>
         /// <returns>Uma lista de <typeparamref name="T"/> preenchidos.</returns>
-        internal static List<T> GetEntityList<T>(IDbConnection connection, IDbCommand command, string storedProcedure) where T : new()
+        internal static List<T> GetEntityList<T>(ref IDbConnection connection, ref IDbCommand command, ref IDbTransaction? transaction, string storedProcedure) where T : new()
         {
-            List<T> returnObject = new();
+            List<T> returnObject = new List<T>();
 
             try
             {
@@ -322,6 +343,11 @@ namespace DynamicDAO.Core
                 if (connection.State == ConnectionState.Closed)
                 {
                     connection.Open();
+
+                    if (transaction != null)
+                    {
+                        command.Transaction ??= transaction;
+                    }
                 }
 
                 using (IDataReader reader = command.ExecuteReader())
